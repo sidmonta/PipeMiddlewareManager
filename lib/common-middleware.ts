@@ -28,6 +28,6 @@ export function tap(fun: (...args: any[]) => any | Promise<any>) {
   }
 }
 
-export function map(fun) {
+export function map(fun: (...args: any[]) => any | Promise<any>) {
   return (deps) => async (...params) => await fun(...params)
 }
