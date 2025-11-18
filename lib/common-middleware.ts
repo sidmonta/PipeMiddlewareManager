@@ -17,7 +17,7 @@ export function stop(stopMessage: string | ((...args: any[]) => string)) {
 }
 }
 
-export function pushData(data) {
+export function pushData<T>(data: T) {
   return () => () => data
 }
 
