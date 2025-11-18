@@ -4,7 +4,7 @@ const generateMessage = (
 ): string =>
   typeof message === "function" ? message(...params) : message
 
-export function throwError(errorMessage) {
+export function throwError(errorMessage: string | ((...args: any[]) => string)) {
   return () => (...params) => {
     throw new Error(generateMessage(errorMessage))
   }
