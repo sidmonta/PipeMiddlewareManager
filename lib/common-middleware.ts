@@ -21,7 +21,7 @@ export function pushData<T>(data: T) {
   return () => () => data
 }
 
-export function tap(fun) {
+export function tap(fun: (...args: any[]) => any | Promise<any>) {
   return (deps) => async (...params) => {
     await fun(...params)
     return params[0]
