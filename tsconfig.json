@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "ESNext",
+    "declaration": true,
+    "outDir": "lib_build",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true
+  },
+  "include": ["lib/**/*", "test.spec.js"],
+  "exclude": ["node_modules", "build"]
+}
