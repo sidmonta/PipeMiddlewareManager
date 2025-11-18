@@ -1,10 +1,8 @@
 import { StopCall, MaybePromise, Middleware } from './types'
+import { isFulfilled, isRejected } from './utils'
 
 // A handler is a middleware already bound to deps: (input, queue) => MaybePromise<Out>
-export type Handler<In = unknown, Out = unknown> = (
-  input: In,
-  queue: unknown[]
-) => MaybePromise<Out>
+export type Handler<In = unknown, Out = unknown> = (input: In, queue: unknown[]) => MaybePromise<Out>
 
 const _factory = <D, In, Out, Rest extends unknown[] = unknown[]>(
   deps: D
@@ -26,15 +24,22 @@ const _pipe = async (
   return current
 }
 
-export function pipe<D = unknown>(deps: D) {
-  return async (...middlewaresOrFirstParam: Array<any>) => {
+/**
+ * Overloads per pipe:
+ * - chiamata come pipe(deps)(firstParam, mw1, mw2, ...)
+ * - chiamata come pipe(deps)(mw1, mw2, ...)
+ */
+export function pipe<D, In, Out>(deps: D): (first: In, ...middlewares: Array<Middleware<D, In, Out, unknown[]>>) => Promise<Out>
+export function pipe<D>(deps: D): (...middlewares: Array<Middleware<D, unknown, unknown, unknown[]>>) => Promise<unknown>
+export function pipe<D>(deps: D) {
+  return async (...middlewaresOrFirstParam: unknown[]) => {
     const first = middlewaresOrFirstParam.shift()
     if (typeof first === 'function') {
-      // called as pipe(deps)(mw1, mw2, ...)
-      return await pipAsMiddleware(first, ...middlewaresOrFirstParam)(deps)
+      // chiamata pipe(deps)(mw1, mw2, ...)
+      return await pipAsMiddleware(first as Middleware<D, unknown, unknown, unknown[]>, ...(middlewaresOrFirstParam as Array<Middleware<D, unknown, unknown, unknown[]>>))(deps)
     } else {
       try {
-        const handlers = middlewaresOrFirstParam.map((mid) =>
+        const handlers = (middlewaresOrFirstParam as Array<Middleware<D, unknown, unknown, unknown[]>>).map((mid) =>
           _factory<D, unknown, unknown>(deps)(mid)
         )
         return await _pipe(first, ...handlers)
@@ -122,10 +127,10 @@ export function concurrency<D = unknown, In = unknown, Rest extends unknown[] = 
     )
     const toReturn: Array<R | false> = []
     for (const res of result) {
-      if (res.status === 'rejected' && !(res.reason instanceof StopCall)) {
+      if (isRejected(res) && !(res.reason instanceof StopCall)) {
         throw res.reason
       }
-      toReturn.push((res as PromiseFulfilledResult<R>).value || false)
+      toReturn.push(isFulfilled(res) ? res.value : false)
     }
     return toReturn
   }
