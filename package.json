@@ -5,7 +5,8 @@
   "main": "build/bundle.js",
   "module": "build/bundle.es.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
+    "test:types": "tsd",
     "build": "rollup -c",
     "tsc:check": "tsc --noEmit",
     "dev": "ts-node lib/index.ts"
@@ -37,6 +38,8 @@
     "@rollup/plugin-typescript": "^8.5.0",
     "typescript": "^5.2.2",
     "@types/node": "^20.4.2",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "vitest": "^1.0.0",
+    "tsd": "^0.26.0"
   }
 }
