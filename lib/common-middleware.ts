@@ -10,7 +10,7 @@ export function throwError(errorMessage: string | ((...args: any[]) => string)) 
   }
 }
 
-export function stop(stopMessage) {
+export function stop(stopMessage: string | ((...args: any[]) => string)) {
   return () => (...params) => {
     throw new StopCall(generateMessage(stopMessage, params))
   }
