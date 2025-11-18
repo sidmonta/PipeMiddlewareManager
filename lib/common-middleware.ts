@@ -6,13 +6,13 @@ const generateMessage = (
 
 export function throwError(errorMessage: string | ((...args: any[]) => string)) {
   return () => (...params) => {
-    throw new Error(generateMessage(errorMessage))
+    throw new Error(generateMessage(errorMessage, params))
   }
 }
 
 export function stop(stopMessage) {
-  return () => () => {
-    throw new StopCall(generateMessage(stopMessage))
+  return () => (...params) => {
+    throw new StopCall(generateMessage(stopMessage, params))
   }
 }
 }
